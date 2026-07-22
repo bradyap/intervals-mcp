@@ -1,0 +1,35 @@
+{
+  "name": "@bradyap/intervals-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Private read-only MCP server for Intervals.icu",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build"
+  },
+  "dependencies": {
+    "@bradyap/intervals-client": "git+https://github.com/bradyap/intervals-client.git#07d0f9f0f92e95c5373105e2ccf73d9ecb9fe561",
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.10.7",
+    "eslint": "10.6.0",
+    "globals": "17.7.0",
+    "prettier": "3.9.4",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.63.0",
+    "vitest": "4.1.10"
+  }
+}
