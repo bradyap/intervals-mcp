@@ -12,10 +12,11 @@
     "start": "node dist/index.js",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
+    "test:stdio": "node scripts/stdio-smoke.mjs",
     "lint": "eslint . --max-warnings=0",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build && npm run test:stdio"
   },
   "dependencies": {
     "@bradyap/intervals-client": "git+https://github.com/bradyap/intervals-client.git#07d0f9f0f92e95c5373105e2ccf73d9ecb9fe561",
