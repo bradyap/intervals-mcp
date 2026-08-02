@@ -1,6 +1,6 @@
 # Intervals MCP
 
-Private, read-only Model Context Protocol server for a focused Intervals.icu workflow. It requires Node.js 24 or newer, uses the stdio transport, and pins `@bradyap/intervals-client` to client candidate `07d0f9f0f92e95c5373105e2ccf73d9ecb9fe561`.
+Private, read-only Model Context Protocol server for a focused Intervals.icu workflow. It requires Node.js 24 or newer, uses the stdio transport, and pins `@bradyap/intervals-client` to the v1.0.0 release commit `4ce4d88048dbfc45a9c2ab280a289c5f08b41598`.
 
 ## Setup
 

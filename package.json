@@ -19,8 +19,8 @@
     "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build && npm run test:stdio"
   },
   "dependencies": {
-    "@bradyap/intervals-client": "git+https://github.com/bradyap/intervals-client.git#07d0f9f0f92e95c5373105e2ccf73d9ecb9fe561",
-    "@modelcontextprotocol/sdk": "1.29.0",
+    "@bradyap/intervals-client": "git+https://github.com/bradyap/intervals-client.git#4ce4d88048dbfc45a9c2ab280a289c5f08b41598",
+    "@modelcontextprotocol/sdk": "1.30.0",
     "zod": "4.4.3"
   },
   "devDependencies": {
