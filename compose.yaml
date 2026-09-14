@@ -1,0 +1,28 @@
+services:
+  intervals:
+    build: .
+    init: true
+    restart: unless-stopped
+    environment:
+      CONTROL_PLANE_TUNNEL_ID: ${CONTROL_PLANE_TUNNEL_ID:?Set CONTROL_PLANE_TUNNEL_ID in .env}
+      CONTROL_PLANE_API_KEY: ${CONTROL_PLANE_API_KEY:?Set CONTROL_PLANE_API_KEY in .env}
+      INTERVALS_API_KEY: ${INTERVALS_API_KEY:?Set INTERVALS_API_KEY in .env}
+      MCP_COMMAND: node /app/dist/index.js
+      HEALTH_LISTEN_ADDR: 127.0.0.1:8080
+      LOG_LEVEL: warn
+      LOG_FORMAT: json
+      LOG_HTTP_RAW_UNSAFE: "false"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8080/readyz').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
