@@ -43,9 +43,11 @@ sport-settings IDs accept strings or numbers; activity IDs remain strings.
 
 Writes take an `event` or `workout` object. Both expose `name`, `description` and
 sport `type` (e.g. `Ride`). Events also expose `calendar_id`, `category` (e.g.
-`WORKOUT`, `RACE`, `NOTE`), `start_date_local` and `end_date_local`; library workouts
-expose `folder_id`. Local timestamps use `YYYY-MM-DDTHH:mm:ss` without a timezone
-suffix or UTC conversion. Structured content uses native Intervals.icu
+`WORKOUT`, `RACE_B`, `NOTE`), `start_date_local`, `end_date_local`, `moving_time`
+(planned duration in seconds), `distance` (planned distance in meters) and
+`icu_training_load` (planned training load); library workouts expose `folder_id`.
+Local timestamps use `YYYY-MM-DDTHH:mm:ss` without a timezone suffix or UTC
+conversion. Structured content uses native Intervals.icu
 workout-builder text in `description`, as described in the
 [official API guide](https://forum.intervals.icu/t/api-access-to-intervals-icu/609).
 `workout_doc`, file uploads, identity fields and `upsertOnUid` are not exposed.

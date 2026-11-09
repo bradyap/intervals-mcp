@@ -33,7 +33,22 @@ const eventInput = z.strictObject({
     .string()
     .nullable()
     .optional()
-    .describe("Calendar event category, e.g. WORKOUT, RACE or NOTE"),
+    .describe("Calendar event category, e.g. WORKOUT, RACE_B or NOTE"),
+  moving_time: z
+    .number()
+    .nullable()
+    .optional()
+    .describe("Planned duration in seconds"),
+  distance: z
+    .number()
+    .nullable()
+    .optional()
+    .describe("Planned distance in meters"),
+  icu_training_load: z
+    .number()
+    .nullable()
+    .optional()
+    .describe("Planned training load for this event"),
   start_date_local: z
     .string()
     .nullable()

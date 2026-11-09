@@ -182,6 +182,16 @@ describe("Intervals MCP tools", () => {
       category: "WORKOUT",
       start_date_local: "2026-11-10T09:00:00",
       end_date_local: null,
+      moving_time: 27900,
+      distance: 238504.7808,
+      icu_training_load: 0,
+    };
+    const clearedEvent = {
+      name: null,
+      calendar_id: null,
+      moving_time: null,
+      distance: null,
+      icu_training_load: null,
     };
     const workout = {
       name: "Reusable",
@@ -208,9 +218,9 @@ describe("Intervals MCP tools", () => {
       },
       {
         name: "event_update",
-        args: { eventId: 1, event: { name: null, calendar_id: null } },
+        args: { eventId: 1, event: clearedEvent },
         method: reader.events.update,
-        forwarded: [1, { name: null, calendar_id: null }],
+        forwarded: [1, clearedEvent],
         options: {},
         result: { id: 1 },
       },
@@ -376,6 +386,9 @@ describe("Intervals MCP tools", () => {
     try {
       for (const [name, args] of [
         ["event_create", { event: { calendar_id: true } }],
+        ["event_create", { event: { moving_time: "7:45:00" } }],
+        ["event_update", { eventId: 1, event: { distance: "148.2 mi" } }],
+        ["event_update", { eventId: 1, event: { icu_training_load: {} } }],
         ["event_create", { event: { workout_doc: {} } }],
         ["event_create", { event: {}, upsertOnUid: true }],
         ["event_update", { eventId: 1, event: { typo: "bad" } }],
