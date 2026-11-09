@@ -8,6 +8,19 @@ const expectedToolNames = [
   "activity_get",
   "wellness_list",
   "events_list",
+  "event_get",
+  "event_create",
+  "event_update",
+  "event_delete",
+  "workouts_list",
+  "workout_get",
+  "workout_create",
+  "workout_update",
+  "workout_delete",
+  "calendars_list",
+  "folders_list",
+  "sport_settings_list",
+  "sport_settings_get",
 ];
 
 const transport = new StdioClientTransport({
@@ -36,10 +49,15 @@ try {
     tools.map(({ name }) => name),
     expectedToolNames,
   );
-  assert.equal(
-    tools.every(({ annotations }) => annotations?.readOnlyHint === true),
-    true,
-  );
+  for (const tool of tools) {
+    const write = /_(create|update|delete)$/u.test(tool.name);
+    assert.deepEqual(tool.annotations, {
+      destructiveHint: /_(update|delete)$/u.test(tool.name),
+      idempotentHint: !write,
+      openWorldHint: true,
+      readOnlyHint: !write,
+    });
+  }
   assert.equal(wroteToStderr, false);
 
   await client.close();

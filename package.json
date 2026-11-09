@@ -2,7 +2,7 @@
   "name": "@bradyap/intervals-mcp",
   "version": "0.1.0",
   "private": true,
-  "description": "Private read-only MCP server for Intervals.icu",
+  "description": "Private MCP server for Intervals.icu",
   "type": "module",
   "engines": {
     "node": ">=24.0.0"

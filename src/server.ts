@@ -1,40 +1,16 @@
-import {
-  IntervalsAbortError,
-  IntervalsConfigurationError,
-  IntervalsError,
-  IntervalsHttpError,
-  IntervalsNetworkError,
-  IntervalsRequestError,
-  IntervalsResponseError,
-  type ActivitiesResource,
-  type AthleteResource,
-  type EventsResource,
-  type WellnessResource,
-} from "@bradyap/intervals-client";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import * as z from "zod/v4";
-
-export interface IntervalsReader {
-  readonly activities: Pick<ActivitiesResource, "get" | "list">;
-  readonly athlete: Pick<AthleteResource, "get">;
-  readonly events: Pick<EventsResource, "list">;
-  readonly wellness: Pick<WellnessResource, "list">;
-}
-
-const readOnlyAnnotations = {
-  destructiveHint: false,
-  idempotentHint: true,
-  openWorldHint: true,
-  readOnlyHint: true,
-} as const;
-
-const optionalAthleteId = z
-  .string()
-  .optional()
-  .describe("Intervals athlete ID; defaults to 0");
-const requiredDate = z.string().describe("Calendar date in YYYY-MM-DD format");
-
+import type { IntervalsOperations } from "./operations.js";
+export type { IntervalsOperations } from "./operations.js";
+import {
+  optionalAthleteId,
+  requiredDate,
+  readOnlyAnnotations,
+  runTool,
+} from "./tool-shared.js";
+import { registerEventTools } from "./event-tools.js";
+import { registerWorkoutTools } from "./workout-tools.js";
+import { registerDiscoveryTools } from "./discovery-tools.js";
 const athleteGetInput = z.strictObject({
   athleteId: optionalAthleteId,
 });
@@ -68,7 +44,7 @@ const eventsListInput = z.strictObject({
   resolve: z.boolean().optional().describe("Resolve linked event data"),
 });
 
-export function createIntervalsServer(client: IntervalsReader): McpServer {
+export function createIntervalsServer(client: IntervalsOperations): McpServer {
   const server = new McpServer({
     name: "@bradyap/intervals-mcp",
     version: "0.1.0",
@@ -167,54 +143,8 @@ export function createIntervalsServer(client: IntervalsReader): McpServer {
       ),
   );
 
+  registerEventTools(server, client.events);
+  registerWorkoutTools(server, client.workouts);
+  registerDiscoveryTools(server, client);
   return server;
-}
-
-async function runTool(
-  operation: () => Promise<unknown>,
-): Promise<CallToolResult> {
-  try {
-    const value = await operation();
-
-    return {
-      content: [{ type: "text", text: JSON.stringify(value) }],
-    };
-  } catch (error) {
-    return {
-      content: [{ type: "text", text: safeErrorMessage(error) }],
-      isError: true,
-    };
-  }
-}
-
-function safeErrorMessage(error: unknown): string {
-  if (error instanceof IntervalsAbortError) {
-    return "Intervals request was cancelled.";
-  }
-
-  if (error instanceof IntervalsConfigurationError) {
-    return "Intervals MCP server is not configured correctly.";
-  }
-
-  if (error instanceof IntervalsRequestError) {
-    return "Intervals rejected the tool arguments.";
-  }
-
-  if (error instanceof IntervalsNetworkError) {
-    return "Intervals service is unavailable.";
-  }
-
-  if (error instanceof IntervalsHttpError) {
-    return "Intervals service returned an HTTP error.";
-  }
-
-  if (error instanceof IntervalsResponseError) {
-    return "Intervals returned an unexpected response.";
-  }
-
-  if (error instanceof IntervalsError) {
-    return "Intervals request failed.";
-  }
-
-  return "Tool execution failed.";
 }
