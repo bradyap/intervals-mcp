@@ -451,6 +451,61 @@ describe("Intervals MCP tools", () => {
     }
   });
 
+  it.each([
+    { write: true, status: 500, uncertain: true },
+    { write: true, status: 503, uncertain: true },
+    { write: true, status: 599, uncertain: true },
+    { write: true, status: 400, uncertain: false },
+    { write: true, status: 499, uncertain: false },
+    { write: true, status: 600, uncertain: false },
+    { write: false, status: 503, uncertain: false },
+  ])(
+    "maps HTTP $status with write=$write without diagnostics or retries",
+    async ({ write, status, uncertain }) => {
+      const marker = "private-marker";
+      const error = new IntervalsHttpError({
+        body: marker,
+        headers: { authorization: marker },
+        method: write ? "POST" : "GET",
+        status,
+        statusText: marker,
+        url: `https://example.invalid/${marker}`,
+      });
+      const reader = createReader();
+      const method = vi
+        .fn<IntervalsOperations["events"]["create"]>()
+        .mockRejectedValue(error);
+      const readMethod = vi
+        .fn<IntervalsOperations["athlete"]["get"]>()
+        .mockRejectedValue(error);
+      reader.events.create = method;
+      reader.athlete.get = readMethod;
+      const connection = await connect(reader);
+      try {
+        const result = await connection.client.callTool({
+          name: write ? "event_create" : "athlete_get",
+          arguments: write ? { event: { name: "Ride" } } : {},
+        });
+        expect(result).toEqual({
+          isError: true,
+          content: [
+            {
+              type: "text",
+              text: uncertain
+                ? "Intervals write outcome is uncertain; the operation may have been applied. Check the resource before retrying."
+                : "Intervals service returned an HTTP error.",
+            },
+          ],
+        });
+        expect(JSON.stringify(result)).not.toContain(marker);
+        expect(write ? method : readMethod).toHaveBeenCalledTimes(1);
+        expect(write ? readMethod : method).not.toHaveBeenCalled();
+      } finally {
+        await connection.close();
+      }
+    },
+  );
+
   it("maps client failures to fixed tool errors without exposing diagnostics", async () => {
     const marker = "private-marker";
     let nextError: Error = new Error("not configured");

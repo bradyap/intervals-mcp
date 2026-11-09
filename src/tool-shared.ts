@@ -61,7 +61,10 @@ function safeErrorMessage(error: unknown, write: boolean): string {
     write &&
     (error instanceof IntervalsAbortError ||
       error instanceof IntervalsNetworkError ||
-      error instanceof IntervalsResponseError)
+      error instanceof IntervalsResponseError ||
+      (error instanceof IntervalsHttpError &&
+        error.status >= 500 &&
+        error.status <= 599))
   ) {
     return "Intervals write outcome is uncertain; the operation may have been applied. Check the resource before retrying.";
   }
